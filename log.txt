@@ -1,0 +1,31 @@
+discover-unprovisioned on
+security 0
+provision e6053641e8e200000000000000000000
+menu config
+target 0100
+appkey-add 1
+bind 0 1 1000
+sub-add 0100 c000 1000
+back
+menu onoff
+target 0100
+onoff 1
+onoff 0
+onoff 1
+onoff 0
+onoff 1
+onoff 0
+onoff 1
+onoff 0
+onoff 1
+onoff 0
+onoff 1
+onoff 0
+onoff 1
+onoff 0
+onoff 1
+onoff 0
+onoff 1
+onoff 0
+onoff 1
+onoff 0
