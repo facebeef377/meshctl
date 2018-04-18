@@ -25,7 +25,7 @@ class Meshctl:
 
     def __init__(self):
         out = subprocess.check_output("rfkill unblock bluetooth", shell = True)
-       # self.child = pexpect.spawn("./meshctl", echo = False)    		
+        self.child = pexpect.spawn("./meshctl", echo = False)    		
     '''UWAGA! Wykomentowanie self.child =(...)do testow sprawi, ze'''
     '''devices.json nie bedzie usuwany przy starcie,              '''
     
