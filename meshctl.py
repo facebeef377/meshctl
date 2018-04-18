@@ -25,7 +25,7 @@ class Meshctl:
 
     def __init__(self):
         out = subprocess.check_output("rfkill unblock bluetooth", shell = True)
-        self.child = pexpect.spawn("./meshctl", echo = False)    		
+       # self.child = pexpect.spawn("./meshctl", echo = False)    		
     '''UWAGA! Wykomentowanie self.child =(...)do testow sprawi, ze'''
     '''devices.json nie bedzie usuwany przy starcie,              '''
     
@@ -53,7 +53,9 @@ class Meshctl:
         
         time.sleep(1)
         return "Provisioned!"
-    
+        
+    def provision(self, device_name, uuid, address):
+        return 0
     
     '''Przemyśleć to czy właściwie jest potrzebne'''
     '''Właściwie powinno to być w inicjalizacji całej usługi'''
@@ -110,10 +112,10 @@ class blescan(Resource):
     def get(self):
         file=open("devices.json",'r')
         content=file.read()
+        content= "{\"devices\":[" + content + "]}"
         content = json.loads(content)
-        result = {'data': [content]} #poprawić JSON
         file.close()
-        return jsonify(result)
+        return content
 
 class addlight(Resource):                           #Tutaj całość do poprawy: 
     def post(self):                                 #1)Zmienić DB
