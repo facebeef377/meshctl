@@ -88,15 +88,32 @@ class Meshctl:
     '''Dodać wyświetlanie logów z konsoli'''
     '''Dodać argumenty który TARGET'''
     '''Zbudować z tego api'''
-    def init_led(self,):
-        """Change led state"""
+    def init_led(self, target):
+        self.child.send("menu config" + "\n")
+        time.sleep(1)
+        self.child.send("target " + target + "\n")
+        time.sleep(1)
+        self.child.send("appkey-add 1" + "\n")
+        time.sleep(1)
+        self.child.send("bind 0 1 1000" + "\n")
+        time.sleep(1)
+        self.child.send("sub-add " + target + " c000 1000" + "\n")
+        time.sleep(1)
+        self.child.send("back" + "\n")
+        return "Led Init OK!"
+    	
+    	  """ 
+    	  Dawna wersja init_led, do usuniecia za zgoda reszty
+    	  
+        #Change led state
         self.child.send("back" + "\n")
         time.sleep(1)
         self.child.send("menu onoff" + "\n")
         time.sleep(1)
         self.child.send("target 0100" + "\n")
         time.sleep(1)
-        return "Led Init OK!"
+        """
+        
         
     def led_on(self):                       #dodać argument UUID
         """Change led state"""              #zbudować z tego api
