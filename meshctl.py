@@ -25,7 +25,10 @@ class Meshctl:
 
     def __init__(self):
         out = subprocess.check_output("rfkill unblock bluetooth", shell = True)
-        self.child = pexpect.spawn("./meshctl", echo = False)
+        self.child = pexpect.spawn("./meshctl", echo = False)    		
+    '''UWAGA! Wykomentowanie self.child =(...)do testow sprawi, ze'''
+    '''devices.json nie bedzie usuwany przy starcie,              '''
+    
     
     '''Dodać wyświetlanie logów z konsoli'''
     '''Dodać argumenty który TARGET'''
@@ -63,7 +66,7 @@ class Meshctl:
     '''Dodać wyświetlanie logów z konsoli'''
     '''Dodać argumenty który TARGET'''
     '''Zbudować z tego api'''
-    def init_led(self):
+    def init_led(self,):
         """Change led state"""
         self.child.send("back" + "\n")
         time.sleep(1)
@@ -104,10 +107,12 @@ class login(Resource):
         return jsonify(result)
 
 class blescan(Resource):
-    def post(self):
+    def get(self):
         file=open("devices.json",'r')
         content=file.read()
+        content = json.loads(content)
         result = {'data': [content]} #poprawić JSON
+        file.close()
         return jsonify(result)
 
 class addlight(Resource):                           #Tutaj całość do poprawy: 
@@ -116,10 +121,10 @@ class addlight(Resource):                           #Tutaj całość do poprawy:
         ad = json_data['address']                   #3)Inicalizacja LED
         nm = json_data['name']
         st = "0"
-        print "ad"
+        print("ad")
         conn = db_connect.connect()
         query = conn.execute("insert into devices values(null,'{0}','{1}','{2}')".format(ad,nm,st))
-        print "test"
+        print ("test")
         return {'status':'success'}
     
 class devicelist(Resource):
