@@ -1,8 +1,14 @@
-{
-	"device":{
-		"id": "12345678901",
+
+	{
+	
+		"uuid": "12345678901",
 		"name": "zephyr",
-		"address": "DD:EE:AA:DD",
-		"state": "OFF"
+		"address": "DD:EE:AA:DD"
+	},
+
+	{
+		"uuid": "12345678901",
+		"name": "zephyr",
+		"address": "DD:EE:AA:DD"
+
 	}
-}
