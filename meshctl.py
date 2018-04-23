@@ -9,6 +9,7 @@ import time
 import pexpect
 import subprocess
 import sys
+import ast
 
 db_connect = create_engine('sqlite:///database.db') #create_engine("mysql://mesh:1234@138.68.161.169/mesh", pool_recycle=3600)
 app = Flask(__name__)
@@ -16,23 +17,19 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 api = Api(app)
 
 class MeshError(Exception):
-    """Wywołano ponieważ wystąpił błąd w meshctl."""
+    """Error running meshctl."""
     pass
 
 
 class Meshctl:
-    """A wrapper for bluetoothctl utility."""
+    """A wrapper for meshctl utility."""
 
     def __init__(self):
         out = subprocess.check_output("rfkill unblock bluetooth", shell = True)
-        self.child = pexpect.spawn("./meshctl", echo = False)    		
-    '''UWAGA! Wykomentowanie self.child =(...)do testow sprawi, ze'''
-    '''devices.json nie bedzie usuwany przy starcie,              '''
+        self.child = pexpect.spawn("./meshctl", echo = False) 
+        time.sleep(1)
+        self.child.send("discover-unprovisioned on" + "\n")
     
-    
-    '''Dodać wyświetlanie logów z konsoli'''
-    '''Dodać argumenty który TARGET'''
-    '''Zbudować z tego api'''
     def prov_device(self):
         """Provision device"""
         self.child.send("discover-unprovisioned on" + "\n") #Tutaj raczej nie potrzebne
@@ -54,40 +51,34 @@ class Meshctl:
         time.sleep(1)
         return "Provisioned!"
         
-    def provision(self, device_name, uuid, address):
+    def provision(self, uuid):
         #Wyslanie polecenia meshctl
         self.child.send("security 0" + "\n")
         time.sleep(1)
         self.child.send("provision " + uuid + "\n")
         time.sleep(12)
-        
-        #Otwarcie pliku z danymi przeslanymi przez nrf
         file = open("prov_db.json", 'r')
         content = file.read()
         content= "{\"data\":[" + content + "]}"
         content = json.loads(content)     
         unicastAddress = content['data'][-1]['nodes'][-1]['configuration']['elements'][-1]['unicastAddress']
+        print unicastAddress
         
-        #Uzupelnienie bazy danych o dane z pliku
-        query_string = "INSERT INTO devices (id, address, name, state, target, uuid)"
-        query_string += "VALUES (NULL, NULL, \"zephyr\", 0,"
-        query_string += unicastAddress + ", \"" + uuid + "\" )"
-        conn = db_connect.connect()
-        query = conn.execute(query_string)
+        self.child.send("menu config" + "\n")
+        time.sleep(1)
+        self.child.send("target " + unicastAddress + "\n")
+        time.sleep(1)
+        self.child.send("appkey-add 1" + "\n")
+        time.sleep(1)
+        self.child.send("bind 0 1 1000" + "\n")
+        time.sleep(1)
+        self.child.send("sub-add " + unicastAddress + " c000 1000" + "\n")
+        time.sleep(1)
+        self.child.send("back" + "\n")
+        time.sleep(1)
         
-        return 0
-    
-    '''Przemyśleć to czy właściwie jest potrzebne'''
-    '''Właściwie powinno to być w inicjalizacji całej usługi'''
-    '''Dodać argumenty który TARGET'''
-    '''Zbudować z tego api'''   
-    def start_scan(self):
-        self.child.send("discover-unprovisioned on" + "\n")
-        time.sleep(20)
+        return unicastAddress
         
-    '''Dodać wyświetlanie logów z konsoli'''
-    '''Dodać argumenty który TARGET'''
-    '''Zbudować z tego api'''
     def init_led(self, target):
         self.child.send("menu config" + "\n")
         time.sleep(1)
@@ -101,48 +92,31 @@ class Meshctl:
         time.sleep(1)
         self.child.send("back" + "\n")
         return "Led Init OK!"
-    	
-    	  """ 
-    	  Dawna wersja init_led, do usuniecia za zgoda reszty
-    	  
-        #Change led state
-        self.child.send("back" + "\n")
-        time.sleep(1)
+    
+        
+    def led_on(self, target):
+        """Change led state"""
         self.child.send("menu onoff" + "\n")
         time.sleep(1)
-        self.child.send("target 0100" + "\n")
+        self.child.send("target " + target + "\n")
         time.sleep(1)
-        """
-        
-        
-    def led_on(self):                       #dodać argument UUID
-        """Change led state"""              #zbudować z tego api
         self.child.send("onoff 1" + "\n")
+        time.sleep(1)
+        self.child.send("back" + "\n")
         time.sleep(1)
         return "LED On!"
     
-    def led_off(self):                      #dodać argument UUID
-        """Change led state"""              #zbudować z tego api
+    def led_off(self, target):
+        self.child.send("menu onoff" + "\n")
+        time.sleep(1)
+        self.child.send("target " + target + "\n")
+        time.sleep(1)
         self.child.send("onoff 0" + "\n")
         time.sleep(1)
-        return "LED Off!"
+        self.child.send("back" + "\n")
+        time.sleep(1)
+        return "LED On!"
     
-class test_provisioning(Resource):
-    def get(self):
-        uuid = "129381241298714edfa"
-        file = open("prov_db.json", 'r')
-        content = file.read()
-        content= "{\"data\":[" + content + "]}"
-        content = json.loads(content)     
-        unicastAddress = content['data'][-1]['nodes'][-1]['configuration']['elements'][-1]['unicastAddress']
-        #Uzupelnienie bazy danych o dane z pliku
-        query_string = "INSERT INTO devices (id, address, name, state, target, uuid)"
-        query_string += "VALUES (NULL, NULL, \"zephyr\", 0,"
-        query_string += unicastAddress + ", \"" + uuid + "\" )"
-        conn = db_connect.connect()
-        query = conn.execute(query_string)
-        
-        return unicastAddress
 
 class UserList(Resource):
     def post(self):
@@ -162,17 +136,23 @@ class login(Resource):
         return jsonify(result)
 
 class blescan(Resource):
+    def post(self):
+        file=open("devices.json",'r')
+        content=file.read()
+        file.close()
+        data_dict = ast.literal_eval(content)
+        return {'devices' : data_dict}
+    
     def get(self):
         file=open("devices.json",'r')
         content=file.read()
-        content= "{\"devices\":[" + content + "]}"
-        content = json.loads(content)
         file.close()
-        return content
+        data_dict = ast.literal_eval(content)
+        return {'devices' : data_dict}
 
-class addlight(Resource):                           #Tutaj całość do poprawy: 
-    def post(self):                                 #1)Zmienić DB
-        json_data = request.get_json(force=True)    #2)Zaimplementować Provisoring
+class addlight(Resource): 
+    def post(self):                                 #1)Zmienic DB
+        json_data = request.get_json(force=True)    #2)Zaimplementowac Provisoring
         ad = json_data['address']                   #3)Inicalizacja LED
         nm = json_data['name']
         st = "0"
@@ -180,7 +160,7 @@ class addlight(Resource):                           #Tutaj całość do poprawy:
         conn = db_connect.connect()
         query = conn.execute("insert into devices values(null,'{0}','{1}','{2}')".format(ad,nm,st))
         print ("test")
-        return {'status':'success'}
+        return {'status' : 'OK'}
     
 class devicelist(Resource):
     def post(self):
@@ -189,7 +169,91 @@ class devicelist(Resource):
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         return jsonify(result)
     
+class conn(Resource):
+    def post(self):
+        print("Init mshctl...")
+        if(ifConnected == 0):
+            global bl
+            global ifConnected
+            bl = Meshctl()
+            ifConnected = 1
+            return {'status' : 'OK'}
+        return {'status' : 'error'}
+        
+class disconnect(Resource):
+    def post(self):
+        #Dopisac funckcje od zamykania mesha
+        global ifConnected
+        ifConnected = 0
+        return {'status' : 'OK'}
+        
+class checkconnection(Resource):
+    def post(self):
+        if(ifConnected == 1):
+            return {'status' : 'conn'}
+        if(ifConnected == 0):
+            return {'status' : 'none'}
+        
+class turn_on(Resource):
+    def post(self):
+        #Zmienic w bazie
+        json_data = request.get_json(force=True)
+        target = json_data['target']
+        bl.led_on(target)
+        return {'status' : 'OK'}
     
+    def get(self):
+        #Zmienic w bazie
+        json_data = request.get_json(force=True)
+        target = json_data['target']
+        bl.led_on(target)
+        return {'status' : 'OK'}
+        
+class turn_off(Resource):
+    def post(self):
+        #Zmienic w bazie
+        json_data = request.get_json(force=True)
+        target = json_data['target']
+        bl.led_off(target)
+        return {'status' : 'OK'}
+    
+    def get(self):
+        #Zmienic w bazie
+        json_data = request.get_json(force=True)
+        target = json_data['target']
+        bl.led_on(target)
+        return {'status' : 'OK'}
+        
+class add_device(Resource):
+    def post(self):
+        #Zmienic w bazie
+        json_data = request.get_json(force=True)
+        uuid = json_data['uuid']
+        device_name = json_data['name']
+        address = json_data['address']
+        device_type = "LED"
+        state = "OFF"
+        target = bl.provision(uuid)
+        
+        #Uzupelnienie bazy danych o dane z pliku
+        conn = db_connect.connect()
+        query = conn.execute("insert into devices values(null,'{0}','{1}','{2}','{3}','{4}','{5}')".format(device_name,uuid,target,address,device_type,state))
+        
+        return {'target' : target}
+        
+class set_device(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+        device_type = json_data['type']
+        #if(device_type = 'led')
+        bl.init_led(target)
+        return {'status' : 'OK'}
+        #if(device_type == 'button')
+        #    print "TODO"
+        #    return {'status' : 'OK'}
+        #return {'status' : 'error'}
+        
+        
 #logowanie
 api.add_resource(UserList, '/api/login_all') # Zwraca liste wszystkich userow
 api.add_resource(login, '/api/login') # Zwraca dane pojedynczego usera, sprawdza logowanie!!! /TODO
@@ -198,22 +262,20 @@ api.add_resource(blescan, '/api/blescan') # Zwraca liste ble w otoczeniu
 api.add_resource(addlight, '/api/addlight') # Dodaje plytke do bazy
 api.add_resource(devicelist, '/api/devices') # Zwraca liste wszystkich urzadzen
 #hece z plytka
-#api.add_resource(writeled, '/writeled') #Zapala leda na NRF 
-api.add_resource(test_provisioning, '/api/test_provisioning') #Do testowania 
+api.add_resource(turn_on, '/api/on')            #Turn ON LED on nRF
+api.add_resource(turn_off, '/api/off')           #Turn OFF LED on nRF
+api.add_resource(add_device, '/api/add')         #Add nRF do mesh
+#api.add_resource(set_device, '/api/set')         #Set device type
+#meshctl-api
+api.add_resource(conn, '/api/connect') #Connecting to proxy
+api.add_resource(disconnect, '/api/disconnect') #Disconnecting from proxy
+api.add_resource(checkconnection, '/api/checkconnection') #Checking connection to proxy
 
 if __name__ == '__main__':
-    print("Init mshctl...")
-    bl = Meshctl()
+    ifConnected = 0
+    bl = 0
     print("Ready!")
     app.run(host = '127.0.0.1',port=5502)
     
-    '''
-    Rozumiem zrobić api jako:
-    1) Stworzyć argument który będziemy wprowadzać
-    <adres_ip>:<port>/api/NASZA_FUNKCJA_API/<parametr>
-    2)Zrobić return w jsonie
-    Status: success albo parametr który uzyskaliśmy
-    '''
 
-
-
+#Devices : Name, Address, UUID, Target ,State, Type
