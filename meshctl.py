@@ -61,7 +61,7 @@ class Meshctl:
         content= "{\"data\":[" + content + "]}"
         content = json.loads(content)     
         unicastAddress = content['data'][-1]['nodes'][-1]['configuration']['elements'][-4]['unicastAddress']
-        print unicastAddress
+        print(unicastAddress)
         self.child.send("menu config" + "\n")
         time.sleep(1)
         self.child.send("target " + unicastAddress + "\n")
@@ -76,6 +76,7 @@ class Meshctl:
         time.sleep(1)
         
         return unicastAddress
+        
         
     def init_led(self, target):
         self.child.send("menu config" + "\n")
@@ -167,8 +168,26 @@ class devicelist(Resource):
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         return jsonify(result)
     
+class deviceListActive(Resource):
+    def get(self):
+        conn = db_connect.connect()
+        query = conn.execute("select * from devices where state = \"ON\";")
+        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+        return jsonify(result)
+        
+class getActiveDevicesCount(Resource):
+    def get(self):
+        conn = db_connect.connect()
+        query = conn.execute("select count(id) from devices where state = \"ON\";")
+        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+        return jsonify(result)
+
+
+'''Do weryfikacji przez autora klasy - nie "kompiluje" sie'''
 class conn(Resource):
     def post(self):
+        pass
+        '''
         print("Init mshctl...")
         if(ifConnected == 0):
             global bl
@@ -177,6 +196,7 @@ class conn(Resource):
             ifConnected = 1
             return {'status' : 'OK'}
         return {'status' : 'error'}
+        '''
         
 class disconnect(Resource):
     def post(self):
@@ -259,6 +279,8 @@ api.add_resource(login, '/api/login') # Zwraca dane pojedynczego usera, sprawdza
 api.add_resource(blescan, '/api/blescan') # Zwraca liste ble w otoczeniu
 api.add_resource(addlight, '/api/addlight') # Dodaje plytke do bazy
 api.add_resource(devicelist, '/api/devices') # Zwraca liste wszystkich urzadzen
+api.add_resource(deviceListActive, '/api/active_devices') #Zwraca JSON aktywnych urzadzen
+api.add_resource(getActiveDevicesCount, '/api/active_devices_count')#Zwraca liczbe aktywnych urzadzen, tez JSON
 #hece z plytka
 api.add_resource(turn_on, '/api/on')            #Turn ON LED on nRF
 api.add_resource(turn_off, '/api/off')           #Turn OFF LED on nRF
@@ -268,6 +290,8 @@ api.add_resource(add_device, '/api/add')         #Add nRF do mesh
 api.add_resource(conn, '/api/connect') #Connecting to proxy
 api.add_resource(disconnect, '/api/disconnect') #Disconnecting from proxy
 api.add_resource(checkconnection, '/api/checkconnection') #Checking connection to proxy
+
+
 
 if __name__ == '__main__':
     ifConnected = 0
