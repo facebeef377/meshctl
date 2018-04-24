@@ -34,7 +34,7 @@
   ],
   "nodes":[
     {
-      "deviceKey":"cd2e710cf7e3940b1496220472a8ab7e",
+      "deviceKey":"b6190dbb5c96f80b12839375837212a1",
       "configuration":{
         "netKeys":[
           "0000"
@@ -42,7 +42,18 @@
         "elements":[
           {
             "elementIndex":0,
-            "unicastAddress":"0100"
+            "unicastAddress":"0100",
+            "models":[
+              {
+                "modelId":"1000",
+                "bind":[
+                  1
+                ],
+                "subscribe":[
+                  "c000"
+                ]
+              }
+            ]
           },
           {
             "elementIndex":1,
@@ -111,7 +122,7 @@
         ]
       },
       "IVindex":5,
-      "sequenceNumber":5
+      "sequenceNumber":11
     }
   ],
   "IVindex":5,

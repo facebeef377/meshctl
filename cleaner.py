@@ -3,76 +3,68 @@ uno="""{
   "meshName":"BT Mesh",
   "netKeys":[
     {
-      "index":0,
-      "keyRefresh":0
+      "index": 0,
+      "keyRefresh": 0
     }
   ],
   "appKeys":[
     {
-      "index":0,
-      "boundNetKey":0
+      "index": 0,
+      "boundNetKey": 0
     },
     {
-      "index":1,
-      "boundNetKey":0
+      "index": 1,
+      "boundNetKey": 0
     }
   ],
-  "node":{
-    "composition":{
-      "cid":"0002",
-      "pid":"0010",
-      "vid":"0001",
-      "crpl":"000a",
-      "features":{
-        "relay":false,
-        "proxy":true,
-        "friend":false,
-        "lowPower":false
-      },
-      "elements":[
-        {
-          "elementIndex":0,
-          "location":"0001",
-          "models":[
-            "0000",
-            "0001",
-            "1001"
-          ]
-        }
-      ]
+"node": {
+	"IVindex":"00000005",
+	"IVupdate":"0",
+	"sequenceNumber": 0,
+    "composition": {
+        "cid": "0002",
+        "pid": "0010",
+        "vid": "0001",
+        "crpl": "000a",
+        "features": {
+            "relay": false,
+            "proxy": true,
+            "friend": false,
+            "lowPower": false
+        },
+        "elements": [
+            {
+                "elementIndex": 0,
+                "location": "0001",
+                "models": ["0000", "0001", "1001"]
+            }
+        ]
     },
     "configuration":{
-      "netKeys":[
-        0
-      ],
-      "appKeys":[
-        0,
-        1
-      ],
-      "defaultTTL":10,
-      "elements":[
-        {
-          "elementIndex":0,
-          "unicastAddress":"0077",
-          "models":[
-            {
-              "modelId":"1001",
-              "bind":[
-                1
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "IVindex":5,
-    "IVupdate":0,
-    "sequenceNumber":100
+        "netKeys": [0],
+        "appKeys": [ 0, 1],
+        "defaultTTL": 10,
+        "elements": [
+          {
+            "elementIndex": 0,
+            "unicastAddress":"0077",
+            "models": [
+               {
+                 "modelId": "1001",
+                 "bind": [1]
+                }
+            ]
+          }
+        ]
+    }
   }
-}"""
+}
+"""
 dos="""{
   "$schema":"file:\/\/\/BlueZ\/Mesh\/schema\/mesh.jsonschema",
   "meshName":"BT Mesh",
+  "IVindex":5,
+  "IVupdate":0,
   "netKeys":[
     {
       "index":0,
@@ -104,102 +96,8 @@ dos="""{
       ]
     }
   ],
-  "nodes":[
-    {
-      "deviceKey":"a241aab30683366fd35db711c429d308",
-      "configuration":{
-        "netKeys":[
-          "0000"
-        ],
-        "elements":[
-          {
-            "elementIndex":0,
-            "unicastAddress":"0100",
-            "models":[
-              {
-                "modelId":"1000",
-                "bind":[
-                  1
-                ],
-                "subscribe":[
-                  "c000"
-                ]
-              }
-            ]
-          },
-          {
-            "elementIndex":1,
-            "unicastAddress":"0101"
-          },
-          {
-            "elementIndex":2,
-            "unicastAddress":"0102"
-          },
-          {
-            "elementIndex":3,
-            "unicastAddress":"0103"
-          }
-        ],
-        "appKeys":[
-          "0001"
-        ]
-      },
-      "composition":{
-        "cid":"05f1",
-        "pid":"0000",
-        "vid":"0000",
-        "crpl":"000a",
-        "features":{
-          "relay":true,
-          "proxy":true,
-          "friend":false,
-          "lpn":false
-        },
-        "elements":[
-          {
-            "elementIndex":0,
-            "location":"0000",
-            "models":[
-              "0000",
-              "0001",
-              "0002",
-              "1000",
-              "1001"
-            ]
-          },
-          {
-            "elementIndex":1,
-            "location":"0000",
-            "models":[
-              "1000",
-              "1001"
-            ]
-          },
-          {
-            "elementIndex":2,
-            "location":"0000",
-            "models":[
-              "1000",
-              "1001"
-            ]
-          },
-          {
-            "elementIndex":3,
-            "location":"0000",
-            "models":[
-              "1000",
-              "1001"
-            ]
-          }
-        ]
-      },
-      "IVindex":5,
-      "sequenceNumber":27
-    }
-  ],
-  "IVindex":5,
-  "IVupdate":0
-}"""
+}
+"""
 
 def clean():
 	print "Ja tu tylko sprzatam..."
@@ -210,3 +108,5 @@ def clean():
 	pliczor.write(dos)
 	pliczor.close()
 	print "Gitara siema"
+
+clean()

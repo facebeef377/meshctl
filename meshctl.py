@@ -28,6 +28,8 @@ class Meshctl:
         out = subprocess.check_output("rfkill unblock bluetooth", shell = True)
         self.child = pexpect.spawn("./meshctl", echo = False) 
         time.sleep(1)
+        self.child.send("security 0" + "\n")
+        time.sleep(1)
         self.child.send("discover-unprovisioned on" + "\n")
     
     def prov_device(self):
@@ -36,7 +38,7 @@ class Meshctl:
         time.sleep(20)
         self.child.send("security 0" + "\n")
         time.sleep(1)
-        self.child.send("provision e6053641e8e200000000000000000000" + "\n")
+        self.child.send("provision f31711b58bcf00000000000000000000" + "\n")
         time.sleep(10)
         self.child.send("menu config" + "\n")
         time.sleep(1)
@@ -47,23 +49,19 @@ class Meshctl:
         self.child.send("bind 0 1 1000" + "\n")
         time.sleep(1)
         self.child.send("sub-add 0100 c000 1000" + "\n")
-        
         time.sleep(1)
         return "Provisioned!"
         
     def provision(self, uuid):
         #Wyslanie polecenia meshctl
-        self.child.send("security 0" + "\n")
-        time.sleep(1)
         self.child.send("provision " + uuid + "\n")
         time.sleep(12)
         file = open("prov_db.json", 'r')
         content = file.read()
         content= "{\"data\":[" + content + "]}"
         content = json.loads(content)     
-        unicastAddress = content['data'][-1]['nodes'][-1]['configuration']['elements'][-1]['unicastAddress']
+        unicastAddress = content['data'][-1]['nodes'][-1]['configuration']['elements'][-4]['unicastAddress']
         print unicastAddress
-        
         self.child.send("menu config" + "\n")
         time.sleep(1)
         self.child.send("target " + unicastAddress + "\n")
@@ -115,7 +113,7 @@ class Meshctl:
         time.sleep(1)
         self.child.send("back" + "\n")
         time.sleep(1)
-        return "LED On!"
+        return "LED Off!"
     
 
 class UserList(Resource):
