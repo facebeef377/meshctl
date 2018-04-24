@@ -12,7 +12,8 @@ cd bluez
 $ bootstrap
 $ ./configure --prefix=/usr --mandir=/usr/share/man --sysconfdir=/etc --localstatedir=/var --enable-mesh
 $ make
-$ sudo make install```
+$ sudo make install
+```
 
 ### Install 
 After installing blueZ put files from this repository to `/mesh`
