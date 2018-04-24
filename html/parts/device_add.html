@@ -1,0 +1,50 @@
+<div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-plain">
+                            <div class="header">
+                                <h4 class="title">Lista wszystkich wykrywalnych urządzeń</h4>
+                                <p class="category">Wybierz interesujące cię urządzenie</p>
+                            </div>
+                            <div class="content table-responsive table-full-width">
+                                <table class="table table-hover">
+                                    <thead>
+                                    	<th>Nazwa</th>
+                                    	<th>Adres</th>
+                                    	<th>UUID</th>
+                                    	<th>Menu</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="x in blescan_list">
+                                        	<td>{{x.name}}</td>
+                                        	<td>{{x.address}}</td>
+                                        	<td>{{x.uuid}}</td>
+                                        	<!--<td><button type="button" data-toggle="modal" data-target="#addlightmodal" class="btn btn-default">Dodaj</button></td>-->
+                                            <td><button ng-click="AddLight(x)" class="btn">Dodaj</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+<!-- Modal -->
+<div class="modal fade" id="addlightmodal" tabindex="-1" role="dialog" aria-labelledby="addlightmodal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" ng-click="AddLight(x)" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
