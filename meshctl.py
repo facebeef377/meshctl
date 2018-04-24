@@ -171,14 +171,14 @@ class devicelist(Resource):
 class deviceListActive(Resource):
     def get(self):
         conn = db_connect.connect()
-        query = conn.execute("select * from devices where state = \"ON\";")
+        query = conn.execute("SELECT * FROM devices WHERE state = \"ON\";")
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         return jsonify(result)
         
 class getActiveDevicesCount(Resource):
     def get(self):
         conn = db_connect.connect()
-        query = conn.execute("select count(id) from devices where state = \"ON\";")
+        query = conn.execute("SELECT COUNT(id) AS count FROM devices WHERE state = \"ON\";")
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         return jsonify(result)
 
