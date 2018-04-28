@@ -108,5 +108,3 @@ def clean():
 	pliczor.write(dos)
 	pliczor.close()
 	print "Gitara siema"
-
-clean()

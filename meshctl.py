@@ -10,6 +10,7 @@ import pexpect
 import subprocess
 import sys
 import ast
+import cleaner
 
 db_connect = create_engine('sqlite:///database.db') #create_engine("mysql://mesh:1234@138.68.161.169/mesh", pool_recycle=3600)
 app = Flask(__name__)
@@ -27,94 +28,86 @@ class Meshctl:
     def __init__(self):
         out = subprocess.check_output("rfkill unblock bluetooth", shell = True)
         self.child = pexpect.spawn("./meshctl", echo = False) 
-        time.sleep(1)
         self.child.send("security 0" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
         self.child.send("discover-unprovisioned on" + "\n")
-    
-    def prov_device(self):
-        """Provision device"""
-        self.child.send("discover-unprovisioned on" + "\n") #Tutaj raczej nie potrzebne
-        time.sleep(20)
-        self.child.send("security 0" + "\n")
-        time.sleep(1)
-        self.child.send("provision f31711b58bcf00000000000000000000" + "\n")
-        time.sleep(10)
-        self.child.send("menu config" + "\n")
-        time.sleep(1)
-        self.child.send("target 0100" + "\n")
-        time.sleep(1)
-        self.child.send("appkey-add 1" + "\n")
-        time.sleep(1)
-        self.child.send("bind 0 1 1000" + "\n")
-        time.sleep(1)
-        self.child.send("sub-add 0100 c000 1000" + "\n")
-        time.sleep(1)
-        return "Provisioned!"
         
     def provision(self, uuid):
         #Wyslanie polecenia meshctl
+        print("Rozpoczynam provision z " + uuid)
+        self.child.send("disconnect" + "\n")
+        self.child.expect("#")
         self.child.send("provision " + uuid + "\n")
-        time.sleep(12)
-        file = open("prov_db.json", 'r')
-        content = file.read()
-        content= "{\"data\":[" + content + "]}"
-        content = json.loads(content)     
-        unicastAddress = content['data'][-1]['nodes'][-1]['configuration']['elements'][-4]['unicastAddress']
-        print(unicastAddress)
-        self.child.send("menu config" + "\n")
-        time.sleep(1)
-        self.child.send("target " + unicastAddress + "\n")
-        time.sleep(1)
-        self.child.send("appkey-add 1" + "\n")
-        time.sleep(1)
-        self.child.send("bind 0 1 1000" + "\n")
-        time.sleep(1)
-        self.child.send("sub-add " + unicastAddress + " c000 1000" + "\n")
-        time.sleep(1)
-        self.child.send("back" + "\n")
-        time.sleep(1)
-        
-        return unicastAddress
+        time.sleep(10)
+        return "OK!"
         
         
     def init_led(self, target):
+        self.child.send("connect 0x0 " + target +  "\n")
+        self.child.expect("#")
         self.child.send("menu config" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
+        print("target" + target)
         self.child.send("target " + target + "\n")
-        time.sleep(1)
+        self.child.expect("#")
+        print("appkey")
         self.child.send("appkey-add 1" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
+        print("bind")
         self.child.send("bind 0 1 1000" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
+        print("sub")
         self.child.send("sub-add " + target + " c000 1000" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
+        print("back")
         self.child.send("back" + "\n")
-        return "Led Init OK!"
+        self.child.expect("#")
+        self.child.send("disconnect" + "\n")
+        self.child.expect("#")
     
         
     def led_on(self, target):
         """Change led state"""
+        print("Zapalam leda" + target)
+        self.child.send("connect 0x0 " + target +  "\n")
+        self.child.expect("#")
         self.child.send("menu onoff" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
         self.child.send("target " + target + "\n")
-        time.sleep(1)
+        self.child.expect("#")
         self.child.send("onoff 1" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
         self.child.send("back" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
+        self.child.send("disconnect" + "\n")
+        self.child.expect("#")
+        print("LED ON!")
         return "LED On!"
     
     def led_off(self, target):
+        print("Wylaczam leda" + target)
+        self.child.send("connect 0x0 " + target +  "\n")
+        self.child.expect("#")
         self.child.send("menu onoff" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
         self.child.send("target " + target + "\n")
-        time.sleep(1)
+        self.child.expect("#")
         self.child.send("onoff 0" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
         self.child.send("back" + "\n")
-        time.sleep(1)
+        self.child.expect("#")
+        self.child.send("disconnect" + "\n")
+        self.child.expect("#")
         return "LED Off!"
+    
+    def quit_mesh(self):
+        """Change led state"""
+        self.child.send("back" + "\n")
+        self.child.expect("#")
+        self.child.send("disconnect" + "\n")
+        self.child.expect("#")
+        self.child.send("quit" + "\n")
+        return "Quit!"
     
 
 class UserList(Resource):
@@ -183,20 +176,20 @@ class getActiveDevicesCount(Resource):
         return jsonify(result)
 
 
-'''Do weryfikacji przez autora klasy - nie "kompiluje" sie'''
 class conn(Resource):
     def post(self):
-        pass
-        '''
         print("Init mshctl...")
+        global ifConnected
+        global bl
         if(ifConnected == 0):
-            global bl
-            global ifConnected
             bl = Meshctl()
             ifConnected = 1
             return {'status' : 'OK'}
+        if(isConnected == 1):
+            bl.quit_mesh()
+            ifConnected = 0
+            return {'status' : 'OK'}
         return {'status' : 'error'}
-        '''
         
 class disconnect(Resource):
     def post(self):
@@ -219,27 +212,13 @@ class turn_on(Resource):
         target = json_data['target']
         bl.led_on(target)
         return {'status' : 'OK'}
-    
-    def get(self):
-        #Zmienic w bazie
-        json_data = request.get_json(force=True)
-        target = json_data['target']
-        bl.led_on(target)
-        return {'status' : 'OK'}
-        
+
 class turn_off(Resource):
     def post(self):
         #Zmienic w bazie
         json_data = request.get_json(force=True)
         target = json_data['target']
         bl.led_off(target)
-        return {'status' : 'OK'}
-    
-    def get(self):
-        #Zmienic w bazie
-        json_data = request.get_json(force=True)
-        target = json_data['target']
-        bl.led_on(target)
         return {'status' : 'OK'}
         
 class add_device(Resource):
@@ -251,12 +230,11 @@ class add_device(Resource):
         address = json_data['address']
         device_type = "LED"
         state = "OFF"
-        target = bl.provision(uuid)
-        
+        bl.provision(uuid)
+        target = unicastAddress()
         #Uzupelnienie bazy danych o dane z pliku
         conn = db_connect.connect()
         query = conn.execute("insert into devices values(null,'{0}','{1}','{2}','{3}','{4}','{5}')".format(device_name,uuid,target,address,device_type,state))
-        
         return {'target' : target}
         
 class set_device(Resource):
@@ -270,6 +248,41 @@ class set_device(Resource):
         #    print "TODO"
         #    return {'status' : 'OK'}
         #return {'status' : 'error'}
+        
+class purge_data(Resource):
+    def get(self):
+        if(ifConnected == 1):
+            bl.quit_mesh()
+        conn = db_connect.connect()
+        query = conn.execute("delete from devices;")
+        cleaner.clean()
+        return {'status' : 'OK'}
+
+class set_led(Resource):
+    def get(self,target):
+        bl.init_led(target)
+        return target
+    
+def unicastAddress():
+    file = open("prov_db.json", 'r')
+    content = file.read()
+    content = json.loads(content)     
+    unicastAddress = content['nodes'][-1]['configuration']['elements'][-4]['unicastAddress']
+    file.close()
+    print("Unicast Data: " + unicastAddress)
+    return unicastAddress
+
+class unicast(Resource):
+    def get(self):
+        file = open("prov_db.json", 'r')
+        content = file.read()
+        content = json.loads(content)     
+        unicastAddress = content['nodes'][-1]['configuration']['elements'][-4]['unicastAddress']
+        file.close()
+        print("Unicast Data: " + unicastAddress)
+        return unicastAddress
+        
+        
         
         
 #logowanie
@@ -290,7 +303,9 @@ api.add_resource(add_device, '/api/add')         #Add nRF do mesh
 api.add_resource(conn, '/api/connect') #Connecting to proxy
 api.add_resource(disconnect, '/api/disconnect') #Disconnecting from proxy
 api.add_resource(checkconnection, '/api/checkconnection') #Checking connection to proxy
-
+api.add_resource(purge_data, '/api/purge') #Delete all data
+api.add_resource(set_led, '/api/setled/<string:target>') #Delete all data
+api.add_resource(unicast, '/api/target') #Delete all data
 
 
 if __name__ == '__main__':
