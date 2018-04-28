@@ -1243,7 +1243,16 @@ bool prov_db_add_new_node(struct mesh_node *node)
 	primary = node_get_primary(node);
 	if (IS_UNASSIGNED(primary))
 		goto done;
+        char *buf = malloc (6);
+        snprintf(buf, 5, "%4.4x", primary);
+        FILE *file = fopen("unicast.txt", "w");
 
+        int results = fputs(buf, file);
+        if (results == EOF) {
+    // Failed to write do error code here.
+        }
+        fclose(file);
+        
 	for (i = 0; i < num_ele; ++i) {
 		json_object *jelement;
 		json_object *jint;

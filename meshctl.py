@@ -17,6 +17,8 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 api = Api(app)
 
+
+
 class MeshError(Exception):
     """Error running meshctl."""
     pass
@@ -40,7 +42,6 @@ class Meshctl:
         self.child.send("provision " + uuid + "\n")
         time.sleep(10)
         return "OK!"
-        
         
     def init_led(self, target):
         self.child.send("connect 0x0 " + target +  "\n")
@@ -263,23 +264,9 @@ class set_led(Resource):
         bl.init_led(target)
         return target
     
-def unicastAddress():
-    file = open("prov_db.json", 'r')
-    content = file.read()
-    content = json.loads(content)     
-    unicastAddress = content['nodes'][-1]['configuration']['elements'][-4]['unicastAddress']
-    file.close()
-    print("Unicast Data: " + unicastAddress)
-    return unicastAddress
-
 class unicast(Resource):
     def get(self):
-        file = open("prov_db.json", 'r')
-        content = file.read()
-        content = json.loads(content)     
-        unicastAddress = content['nodes'][-1]['configuration']['elements'][-4]['unicastAddress']
-        file.close()
-        print("Unicast Data: " + unicastAddress)
+        
         return unicastAddress
         
         
