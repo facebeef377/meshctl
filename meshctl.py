@@ -17,7 +17,12 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 api = Api(app)
 
-
+def readUni():
+        file = open("unicast.txt", 'r')
+        content = file.read() 
+        file.close()
+        print("Unicast Data: " + content)
+        return content
 
 class MeshError(Exception):
     """Error running meshctl."""
@@ -266,8 +271,7 @@ class set_led(Resource):
     
 class unicast(Resource):
     def get(self):
-        
-        return unicastAddress
+        return readUni()
         
         
         
