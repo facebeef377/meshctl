@@ -16,7 +16,7 @@ app
         $scope.isConnected = false;
         
         $rootScope.settings = {
-            login: false,
+            login: true,
             url: "http://127.0.0.1:5502"
         };
         
@@ -28,6 +28,7 @@ app
                 document.location = "/#/login";
             }
             $scope.checkConnection();
+            $scope.getDevices();
         }
         
         $scope.checkConnection = function() {
@@ -78,7 +79,8 @@ app
 				.then(
 					function(result) 
 					{
-                        $scope.blescan_list = result.data;
+                        console.log(result.data);
+                        $scope.blescan_list = result.data.devices;
 					});
         }
         
@@ -89,6 +91,7 @@ app
 				.then(
 					function(result) 
 					{
+                        console.log(result.data.data);
                         $scope.devices = result.data.data;
 					});
         }
@@ -111,22 +114,8 @@ app
 					{
                         console.log(result.data);
                         target = result.data.target;
+                        $rootScope.showSuccessAlert("Dodano urządzenie!");
 					});
-            
-            /*var req2 = {
-                type: "LED",
-                target: target
-            }
-            
-            $http
-                .post($rootScope.settings.url + "/api/set", req)
-				.then(
-					function(result) 
-					{
-                        console.log(result.data);
-                        $scope.showSuccessAlert("Dodano!");
-                       // target = result.data.target;
-					});*/
         }
         
         $scope.on = function(x) {
@@ -142,7 +131,9 @@ app
 					{
                         console.log(result.data);
                         $scope.showSuccessAlert("ON!");
+                        $scope.getDevices();
 					});
+            
                           
         }
         
@@ -159,6 +150,7 @@ app
 					{
                         console.log(result.data);
                         $scope.showSuccessAlert("OFF!");
+                        $scope.getDevices();
 					});
                           
         }
@@ -167,7 +159,71 @@ app
             
         }
         
-        $scope.EditLight = function(x) {
+        $scope.setType = function(x) {
+            
+            swal({
+              title: 'Wybierz typ urządzenia',
+              text: "",
+              type: 'info',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#33b6dd',
+              confirmButtonText: 'BUTTON',
+              cancelButtonText: 'LED',
+              confirmButtonClass: 'btn btn-success',
+              cancelButtonClass: 'btn btn-primary',
+              buttonsStyling: false,
+              reverseButtons: true
+            }).then((result) => {
+              if (result.value) {
+                swal(
+                  'TODO!'
+                )
+              } else if (
+                // Read more about handling dismissals
+                result.dismiss === swal.DismissReason.cancel
+              ) {
+                  
+                var req = {
+                    target: x.target
+                }
+                  
+                $http
+                .post($rootScope.settings.url + "/api/settype", req)
+				.then(
+					function(result) 
+					{
+                        swal(
+                          'Zapisano jako LED'
+                        )
+                        $scope.getDevices();
+					});
+              }
+            })
+            
+        }
+        
+        $scope.purge = function (){
+            
+            swal({
+              title: 'Czy jesteś pewien?',
+              text: "Po tej operacji cała sieć zostanie usunięta!",
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Tak, jestem pewien!'
+            }).then((result) => {
+              if (result.value) {
+                $http
+                .post($rootScope.settings.url + "/api/purge")
+				.then(
+					function(result) 
+					{
+                        $rootScope.showInfoAlert("Usunięto!");
+					});
+              }
+            })
             
         }
         
@@ -239,6 +295,325 @@ app
              });  
         }
             
+        
+        /*/////////////////////////////////////////
+        
+        Timetable TMP
+        
+        *//////////////////////////////////////////
+        
+        $scope.hours = [
+            {
+                time: "0:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "1:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "2:00",
+                pn: false,
+                wt: false,
+                sr: true,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "3:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "4:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "5:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "6:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "7:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "8:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "9:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "10:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "11:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "12:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "13:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "14:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "15:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "16:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "17:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "18:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "19:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "20:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "21:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "22:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "23:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            },
+            {
+                time: "24:00",
+                pn: false,
+                wt: false,
+                sr: false,
+                cz: false,
+                pt: false,
+                so: false,
+                nd: false,
+            }
+        ];
+        
+        $scope.timechange = function(x,y){
+            
+            if(y == 'pn'){
+                if($scope.hours[x].pn){
+                    $scope.hours[x].pn = false;;
+                } else {
+                    $scope.hours[x].pn = true;
+                }  
+            }
+            
+            if(y == 'wt'){
+                if($scope.hours[x].wt){
+                    $scope.hours[x].wt = false;;
+                } else {
+                    $scope.hours[x].wt = true;
+                }  
+            }
+            
+            if(y == 'sr'){
+                if($scope.hours[x].sr){
+                    $scope.hours[x].sr = false;;
+                } else {
+                    $scope.hours[x].sr = true;
+                }  
+            }
+            
+            if(y == 'cz'){
+                if($scope.hours[x].cz){
+                    $scope.hours[x].cz = false;;
+                } else {
+                    $scope.hours[x].cz = true;
+                }  
+            }
+            
+            if(y == 'pt'){
+                if($scope.hours[x].pt){
+                    $scope.hours[x].pt = false;;
+                } else {
+                    $scope.hours[x].pt = true;
+                }  
+            }
+            
+            if(y == 'so'){
+                if($scope.hours[x].so){
+                    $scope.hours[x].so = false;;
+                } else {
+                    $scope.hours[x].so = true;
+                }  
+            }
+            
+            if(y == 'nd'){
+                if($scope.hours[x].nd){
+                    $scope.hours[x].nd = false;;
+                } else {
+                    $scope.hours[x].nd = true;
+                }  
+            }
+            
+        }
 
 
     });

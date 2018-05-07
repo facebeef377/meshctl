@@ -9,6 +9,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <th>Nazwa</th>
+                                        <th>Typ</th>
                                     	<th>Adres</th>
                                     	<th>Status</th>
                                         <th>UnicastAddress</th>
@@ -18,15 +19,23 @@
                                     <tbody>
                                         <tr ng-repeat="x in devices">
                                         	<td>{{x.name}}</td>
+                                            <td>
+                                                <span ng-if="x.type == 'LED'">LED</span>
+                                                <span ng-if="x.type == 'BTN'">Button</span>
+                                                <button ng-if="x.type == 'NULL'" class="btn btn-default" ng-click="setType(x)">Zmień typ</button>
+                                            </td>
                                         	<td>{{x.address}}</td>
                                         	<td>
-                                                <p ng-if="x.state == 'OFF'">Off</p>
-                                                <p ng-if="x.state == 'ON'">On</p>
+                                                <p style="color: red; font-weight: 700;" ng-if="x.state == 'OFF'">Off</p>
+                                                <p style="color: green; font-weight: 700;" ng-if="x.state == 'ON'">On</p>
                                             </td>
                                             <td>{{x.target}}</td>
-                                        	<td><button type="button" ng-click="on(x)" class="btn btn-default"><i class="fa fa-refresh" aria-hidden="true"></i></button><button type="button" ng-click="off(x)" class="btn btn-default"><i class="fa fa-refresh" aria-hidden="true"></i></button></td>
                                         	<td>
-                                                <button type="button" ng-click="EditLight(x.addr)" class="btn btn-default">Edytuj</button>
+                                                <button type="button" ng-click="on(x)" ng-if="x.state == 'OFF'" class="btn btn-default"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+                                                <button type="button" ng-click="off(x)" ng-if="x.state == 'ON'" class="btn btn-default"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+                                            </td>
+                                        	<td>
+                                                <!--<button type="button" ng-click="EditLight(x.addr)" class="btn btn-default">Edytuj</button>-->
                                                 <button type="button" ng-click="DelLight(x.addr)" class="btn btn-default">Usuń</button>
                                             </td>
                                         </tr>

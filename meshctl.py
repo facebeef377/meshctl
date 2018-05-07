@@ -53,19 +53,14 @@ class Meshctl:
         self.child.expect("#")
         self.child.send("menu config" + "\n")
         self.child.expect("#")
-        print("target" + target)
         self.child.send("target " + target + "\n")
         self.child.expect("#")
-        print("appkey")
         self.child.send("appkey-add 1" + "\n")
         self.child.expect("#")
-        print("bind")
         self.child.send("bind 0 1 1000" + "\n")
         self.child.expect("#")
-        print("sub")
         self.child.send("sub-add " + target + " c000 1000" + "\n")
         self.child.expect("#")
-        print("back")
         self.child.send("back" + "\n")
         self.child.expect("#")
         self.child.send("disconnect" + "\n")
@@ -213,18 +208,21 @@ class checkconnection(Resource):
         
 class turn_on(Resource):
     def post(self):
-        #Zmienic w bazie
         json_data = request.get_json(force=True)
         target = json_data['target']
-        bl.led_on(target)
+        bl.led_on(target) 
+        conn = db_connect.connect()
+        query = conn.execute("UPDATE devices SET state='ON' WHERE target='{0}'".format(target)) 
+        
         return {'status' : 'OK'}
 
 class turn_off(Resource):
     def post(self):
-        #Zmienic w bazie
-        json_data = request.get_json(force=True)
+        json_data = request.get_json(force=True)    
         target = json_data['target']
         bl.led_off(target)
+        conn = db_connect.connect()
+        query = conn.execute("UPDATE devices SET state='OFF' WHERE target='{0}'".format(target)) 
         return {'status' : 'OK'}
         
 class add_device(Resource):
@@ -234,10 +232,10 @@ class add_device(Resource):
         uuid = json_data['uuid']
         device_name = json_data['name']
         address = json_data['address']
-        device_type = "LED"
+        device_type = "NULL"
         state = "OFF"
         bl.provision(uuid)
-        target = unicastAddress()
+        target = readUni()
         #Uzupelnienie bazy danych o dane z pliku
         conn = db_connect.connect()
         query = conn.execute("insert into devices values(null,'{0}','{1}','{2}','{3}','{4}','{5}')".format(device_name,uuid,target,address,device_type,state))
@@ -256,7 +254,7 @@ class set_device(Resource):
         #return {'status' : 'error'}
         
 class purge_data(Resource):
-    def get(self):
+    def post(self):
         if(ifConnected == 1):
             bl.quit_mesh()
         conn = db_connect.connect()
@@ -266,8 +264,21 @@ class purge_data(Resource):
 
 class set_led(Resource):
     def get(self,target):
+        print target
         bl.init_led(target)
-        return target
+        #conn = db_connect.connect()
+        #query = conn.execute("UPDATE devices SET type=LED WHERE target='{0}'".format(target))
+        return {'status' : 'OK'}
+    
+class set_type(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+        target = json_data['target']
+        print target
+        bl.init_led(target)
+        conn = db_connect.connect()
+        query = conn.execute("UPDATE devices SET type='LED' WHERE target='{0}'".format(target))
+        return {'status' : 'OK'}
     
 class unicast(Resource):
     def get(self):
@@ -297,7 +308,7 @@ api.add_resource(checkconnection, '/api/checkconnection') #Checking connection t
 api.add_resource(purge_data, '/api/purge') #Delete all data
 api.add_resource(set_led, '/api/setled/<string:target>') #Delete all data
 api.add_resource(unicast, '/api/target') #Delete all data
-
+api.add_resource(set_type, '/api/settype') #Delete all data
 
 if __name__ == '__main__':
     ifConnected = 0

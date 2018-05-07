@@ -34,7 +34,7 @@
   ],
   "nodes":[
     {
-      "deviceKey":"39d788b934623fd5f7ac87fb67b960d4",
+      "deviceKey":"39bc875363fd2c6ca21906271f75605c",
       "configuration":{
         "netKeys":[
           "0000"
@@ -42,7 +42,18 @@
         "elements":[
           {
             "elementIndex":0,
-            "unicastAddress":"0100"
+            "unicastAddress":"0100",
+            "models":[
+              {
+                "modelId":"1000",
+                "bind":[
+                  1
+                ],
+                "subscribe":[
+                  "c000"
+                ]
+              }
+            ]
           },
           {
             "elementIndex":1,
@@ -56,6 +67,9 @@
             "elementIndex":3,
             "unicastAddress":"0103"
           }
+        ],
+        "appKeys":[
+          "0001"
         ]
       },
       "composition":{
@@ -108,110 +122,7 @@
         ]
       },
       "IVindex":5,
-      "sequenceNumber":5
-    },
-    {
-      "deviceKey":"532592a2986b60256f3d8518e0a4f43f",
-      "configuration":{
-        "netKeys":[
-          "0000"
-        ],
-        "elements":[
-          {
-            "elementIndex":0,
-            "unicastAddress":"0104"
-          },
-          {
-            "elementIndex":1,
-            "unicastAddress":"0105"
-          },
-          {
-            "elementIndex":2,
-            "unicastAddress":"0106"
-          },
-          {
-            "elementIndex":3,
-            "unicastAddress":"0107"
-          }
-        ]
-      }
-    },
-    {
-      "deviceKey":"0977b0cf2cbfd13a01fa4c724cf2155c",
-      "configuration":{
-        "netKeys":[
-          "0000"
-        ],
-        "elements":[
-          {
-            "elementIndex":0,
-            "unicastAddress":"0108"
-          },
-          {
-            "elementIndex":1,
-            "unicastAddress":"0109"
-          },
-          {
-            "elementIndex":2,
-            "unicastAddress":"010a"
-          },
-          {
-            "elementIndex":3,
-            "unicastAddress":"010b"
-          }
-        ]
-      },
-      "composition":{
-        "cid":"05f1",
-        "pid":"0000",
-        "vid":"0000",
-        "crpl":"000a",
-        "features":{
-          "relay":true,
-          "proxy":true,
-          "friend":false,
-          "lpn":false
-        },
-        "elements":[
-          {
-            "elementIndex":0,
-            "location":"0000",
-            "models":[
-              "0000",
-              "0001",
-              "0002",
-              "1000",
-              "1001"
-            ]
-          },
-          {
-            "elementIndex":1,
-            "location":"0000",
-            "models":[
-              "1000",
-              "1001"
-            ]
-          },
-          {
-            "elementIndex":2,
-            "location":"0000",
-            "models":[
-              "1000",
-              "1001"
-            ]
-          },
-          {
-            "elementIndex":3,
-            "location":"0000",
-            "models":[
-              "1000",
-              "1001"
-            ]
-          }
-        ]
-      },
-      "IVindex":5,
-      "sequenceNumber":5
+      "sequenceNumber":14
     }
   ],
   "IVindex":5,

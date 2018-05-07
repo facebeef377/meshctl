@@ -13,6 +13,9 @@ app.config(function($routeProvider,$locationProvider) {
     .when('/login', {
 		templateUrl : 'parts/login.html',
 	})
+    .when('/timetable', {
+		templateUrl : 'parts/timetable.html',
+	})
 	.otherwise({
 		redirectTo : '/start'
 	});

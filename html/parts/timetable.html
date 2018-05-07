@@ -1,0 +1,47 @@
+<div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-plain">
+                            <div class="header">
+                                <h4 class="title">Panel zarządzania czasem odpalania świateł</h4>
+                                <p class="category">Wybierz urządzenie którym chcesz zarządzać</p>
+                            </div>
+                            <div class="content table-responsive table-full-width">
+                                <br /><br />
+                                <select class="form-control" ng-model="timetable.device">
+                                    <option value="">Wybierz urządzenie</option>
+                                    <option ng-repeat="x in devices" value="x.uuid">{{x.name}}</option>
+                                </select>
+                                <br /><br />
+                                <button ng-if="timetable.device" class="btn btn-success">Zapisz</button>
+                                <hr>
+                                <table class="table timetable" ng-if="timetable.device">
+                                    <thead>
+                                        <th>##</th>
+                                        <th>Poniedziałek</th>
+                                        <th>Wtorek</th>
+                                    	<th>Środa</th>
+                                    	<th>Czwartek</th>
+                                        <th>Piątek</th>
+                                    	<th>Sobota</th>
+                                    	<th>Niedziela</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="x in hours">
+                                        	<td>{{x.time}}</td>
+                                            <td ng-style="x.pn && {'background-color':'rgba(48, 162, 48, 0.49)'}" ng-click="timechange($index,'pn')"></td>
+                                            <td ng-style="x.wt && {'background-color':'rgba(48, 162, 48, 0.49)'}" ng-click="timechange($index,'wt')"></td>
+                                            <td ng-style="x.sr && {'background-color':'rgba(48, 162, 48, 0.49)'}" ng-click="timechange($index,'sr')"></td>
+                                            <td ng-style="x.cz && {'background-color':'rgba(48, 162, 48, 0.49)'}" ng-click="timechange($index,'cz')"></td>
+                                            <td ng-style="x.pt && {'background-color':'rgba(48, 162, 48, 0.49)'}" ng-click="timechange($index,'pt')"></td>
+                                            <td ng-style="x.so && {'background-color':'rgba(48, 162, 48, 0.49)'}" ng-click="timechange($index,'so')"></td>
+                                            <td ng-style="x.nd && {'background-color':'rgba(48, 162, 48, 0.49)'}" ng-click="timechange($index,'nd')"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>

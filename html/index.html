@@ -65,6 +65,12 @@
                         <p>Dodaj urządzenie</p>
                     </a>
                 </li>
+                <li ng-click="getDevices()" ng-if="settings.login">
+                    <a href="#/timetable">
+                        <i class="ti-timer"></i>
+                        <p>Zarządzanie czasem</p>
+                    </a>
+                </li>
                 <li ng-if="!settings.login">
                     <a href="#/login">
                         <i class="ti-shift-right"></i>
@@ -146,19 +152,19 @@
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title">Modal Heading</h4>
-          cf:8b:b5:11:17:f3
+          <h4 class="modal-title">Ustawienia systemu</h4>
+          Zmień parametry działania sieci.
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
 
       <!-- Modal body -->
       <div class="modal-body">
-        Modal body..
+        <h4>Wyczyść sieć - <button class="btn btn-danger" ng-click="purge()">Wyczyść!</button></h4>
       </div>
 
       <!-- Modal footer -->
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Zamknij</button>
       </div>
 
     </div>
