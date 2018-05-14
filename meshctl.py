@@ -35,6 +35,7 @@ class Meshctl:
     def __init__(self):
         out = subprocess.check_output("rfkill unblock bluetooth", shell = True)
         self.child = pexpect.spawn("./meshctl", echo = False) 
+        self.child.logfile = sys.stdout
         self.child.send("security 0" + "\n")
         self.child.expect("#")
         self.child.send("discover-unprovisioned on" + "\n")
@@ -42,15 +43,25 @@ class Meshctl:
     def provision(self, uuid):
         #Wyslanie polecenia meshctl
         print("Rozpoczynam provision z " + uuid)
-        self.child.send("disconnect" + "\n")
-        self.child.expect("#")
         self.child.send("provision " + uuid + "\n")
-        time.sleep(10)
+        time.sleep(15)
+        self.child.send("disconnect" + "\n")
+        self.child.expect("disconnected")
+        self.quit_mesh()
+        self.__init__()
         return "OK!"
+    
+    def killmesh(self):
+        self.child.kill(signal.SIGINT)
+        print("Process killed")
+        
         
     def init_led(self, target):
-        self.child.send("connect 0x0 " + target +  "\n")
+        self.child.send("discover-unprovisioned off" + "\n")
         self.child.expect("#")
+        self.child.send("connect 0x0 \n")
+        self.child.expect("successful", timeout=None)
+        time.sleep(3)
         self.child.send("menu config" + "\n")
         self.child.expect("#")
         self.child.send("target " + target + "\n")
@@ -64,14 +75,42 @@ class Meshctl:
         self.child.send("back" + "\n")
         self.child.expect("#")
         self.child.send("disconnect" + "\n")
+        self.child.expect("disconnected")
+        self.child.send("discover-unprovisioned on" + "\n")
+        self.child.expect("#")
+        
+    def init_btn(self, target):
+        self.child.send("discover-unprovisioned off" + "\n")
+        self.child.expect("#")
+        self.child.send("connect 0x0 \n")
+        self.child.expect("successful", timeout=None)
+        time.sleep(3)
+        self.child.send("menu config" + "\n")
+        self.child.expect("#")
+        self.child.send("target " + target + "\n")
+        self.child.expect("#")
+        self.child.send("appkey-add 1" + "\n")
+        self.child.expect("#")
+        self.child.send("bind 1 1 1001" + "\n")
+        self.child.expect("#")
+        self.child.send("pub-set " + target + " c000 1 0 0 1001" + "\n")
+        self.child.expect("#")
+        self.child.send("back" + "\n")
+        self.child.expect("#")
+        self.child.send("disconnect" + "\n")
+        self.child.expect("disconnected")
+        self.child.send("discover-unprovisioned on" + "\n")
         self.child.expect("#")
     
         
     def led_on(self, target):
         """Change led state"""
         print("Zapalam leda" + target)
-        self.child.send("connect 0x0 " + target +  "\n")
+        self.child.send("discover-unprovisioned off" + "\n")
         self.child.expect("#")
+        self.child.send("connect 0x0 " +  "\n")
+        self.child.expect("successful", timeout=None)
+        time.sleep(3)
         self.child.send("menu onoff" + "\n")
         self.child.expect("#")
         self.child.send("target " + target + "\n")
@@ -81,14 +120,19 @@ class Meshctl:
         self.child.send("back" + "\n")
         self.child.expect("#")
         self.child.send("disconnect" + "\n")
+        self.child.expect("disconnected")
+        self.child.send("discover-unprovisioned on" + "\n")
         self.child.expect("#")
         print("LED ON!")
         return "LED On!"
     
     def led_off(self, target):
         print("Wylaczam leda" + target)
-        self.child.send("connect 0x0 " + target +  "\n")
+        self.child.send("discover-unprovisioned off" + "\n")
         self.child.expect("#")
+        self.child.send("connect 0x0 " +  "\n")
+        self.child.expect("successful", timeout=None)
+        time.sleep(3)
         self.child.send("menu onoff" + "\n")
         self.child.expect("#")
         self.child.send("target " + target + "\n")
@@ -98,14 +142,14 @@ class Meshctl:
         self.child.send("back" + "\n")
         self.child.expect("#")
         self.child.send("disconnect" + "\n")
+        self.child.expect("disconnected")
+        self.child.send("discover-unprovisioned on" + "\n")
         self.child.expect("#")
         return "LED Off!"
     
     def quit_mesh(self):
         """Change led state"""
         self.child.send("back" + "\n")
-        self.child.expect("#")
-        self.child.send("disconnect" + "\n")
         self.child.expect("#")
         self.child.send("quit" + "\n")
         return "Quit!"
@@ -261,16 +305,8 @@ class purge_data(Resource):
         query = conn.execute("delete from devices;")
         cleaner.clean()
         return {'status' : 'OK'}
-
-class set_led(Resource):
-    def get(self,target):
-        print target
-        bl.init_led(target)
-        #conn = db_connect.connect()
-        #query = conn.execute("UPDATE devices SET type=LED WHERE target='{0}'".format(target))
-        return {'status' : 'OK'}
     
-class set_type(Resource):
+class set_led(Resource):
     def post(self):
         json_data = request.get_json(force=True)
         target = json_data['target']
@@ -278,6 +314,16 @@ class set_type(Resource):
         bl.init_led(target)
         conn = db_connect.connect()
         query = conn.execute("UPDATE devices SET type='LED' WHERE target='{0}'".format(target))
+        return {'status' : 'OK'}
+    
+class set_btn(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+        target = json_data['target']
+        print target
+        bl.init_btn(target)
+        conn = db_connect.connect()
+        query = conn.execute("UPDATE devices SET type='BTN' WHERE target='{0}'".format(target))
         return {'status' : 'OK'}
     
 class unicast(Resource):
@@ -306,9 +352,9 @@ api.add_resource(conn, '/api/connect') #Connecting to proxy
 api.add_resource(disconnect, '/api/disconnect') #Disconnecting from proxy
 api.add_resource(checkconnection, '/api/checkconnection') #Checking connection to proxy
 api.add_resource(purge_data, '/api/purge') #Delete all data
-api.add_resource(set_led, '/api/setled/<string:target>') #Delete all data
 api.add_resource(unicast, '/api/target') #Delete all data
-api.add_resource(set_type, '/api/settype') #Delete all data
+api.add_resource(set_led, '/api/setled') #Delete all data
+api.add_resource(set_btn, '/api/setbtn') #Delete all data
 
 if __name__ == '__main__':
     ifConnected = 0

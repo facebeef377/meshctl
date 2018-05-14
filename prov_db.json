@@ -34,7 +34,7 @@
   ],
   "nodes":[
     {
-      "deviceKey":"39bc875363fd2c6ca21906271f75605c",
+      "deviceKey":"7d8e8253ec780548bf780e9502bc8abd",
       "configuration":{
         "netKeys":[
           "0000"
@@ -42,18 +42,7 @@
         "elements":[
           {
             "elementIndex":0,
-            "unicastAddress":"0100",
-            "models":[
-              {
-                "modelId":"1000",
-                "bind":[
-                  1
-                ],
-                "subscribe":[
-                  "c000"
-                ]
-              }
-            ]
+            "unicastAddress":"0100"
           },
           {
             "elementIndex":1,
@@ -122,7 +111,167 @@
         ]
       },
       "IVindex":5,
-      "sequenceNumber":14
+      "sequenceNumber":5
+    },
+    {
+      "deviceKey":"e78774480e0a78f9fe42dda6b5af254f",
+      "configuration":{
+        "netKeys":[
+          "0000"
+        ],
+        "elements":[
+          {
+            "elementIndex":0,
+            "unicastAddress":"0104"
+          },
+          {
+            "elementIndex":1,
+            "unicastAddress":"0105"
+          },
+          {
+            "elementIndex":2,
+            "unicastAddress":"0106"
+          },
+          {
+            "elementIndex":3,
+            "unicastAddress":"0107"
+          }
+        ],
+        "appKeys":[
+          "0001"
+        ]
+      },
+      "composition":{
+        "cid":"05f1",
+        "pid":"0000",
+        "vid":"0000",
+        "crpl":"000a",
+        "features":{
+          "relay":true,
+          "proxy":true,
+          "friend":false,
+          "lpn":false
+        },
+        "elements":[
+          {
+            "elementIndex":0,
+            "location":"0000",
+            "models":[
+              "0000",
+              "0001",
+              "0002",
+              "1000",
+              "1001"
+            ]
+          },
+          {
+            "elementIndex":1,
+            "location":"0000",
+            "models":[
+              "1000",
+              "1001"
+            ]
+          },
+          {
+            "elementIndex":2,
+            "location":"0000",
+            "models":[
+              "1000",
+              "1001"
+            ]
+          },
+          {
+            "elementIndex":3,
+            "location":"0000",
+            "models":[
+              "1000",
+              "1001"
+            ]
+          }
+        ]
+      },
+      "IVindex":5,
+      "sequenceNumber":5
+    },
+    {
+      "deviceKey":"03636ac64aa7882ec61f46f4c2835a34",
+      "configuration":{
+        "netKeys":[
+          "0000"
+        ],
+        "elements":[
+          {
+            "elementIndex":0,
+            "unicastAddress":"0108"
+          },
+          {
+            "elementIndex":1,
+            "unicastAddress":"0109"
+          },
+          {
+            "elementIndex":2,
+            "unicastAddress":"010a"
+          },
+          {
+            "elementIndex":3,
+            "unicastAddress":"010b"
+          }
+        ],
+        "appKeys":[
+          "0001"
+        ]
+      },
+      "composition":{
+        "cid":"05f1",
+        "pid":"0000",
+        "vid":"0000",
+        "crpl":"000a",
+        "features":{
+          "relay":true,
+          "proxy":true,
+          "friend":false,
+          "lpn":false
+        },
+        "elements":[
+          {
+            "elementIndex":0,
+            "location":"0000",
+            "models":[
+              "0000",
+              "0001",
+              "0002",
+              "1000",
+              "1001"
+            ]
+          },
+          {
+            "elementIndex":1,
+            "location":"0000",
+            "models":[
+              "1000",
+              "1001"
+            ]
+          },
+          {
+            "elementIndex":2,
+            "location":"0000",
+            "models":[
+              "1000",
+              "1001"
+            ]
+          },
+          {
+            "elementIndex":3,
+            "location":"0000",
+            "models":[
+              "1000",
+              "1001"
+            ]
+          }
+        ]
+      },
+      "IVindex":5,
+      "sequenceNumber":5
     }
   ],
   "IVindex":5,
