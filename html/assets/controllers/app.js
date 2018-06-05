@@ -10,9 +10,7 @@ app
         //Agent nieruchomości
         $rootScope.user = {};
         $scope.devices = {};
-        
         $scope.logindetail = {};
-        
         $scope.isConnected = false;
         
         $rootScope.settings = {
@@ -28,7 +26,9 @@ app
                 document.location = "/#/login";
             }
             $scope.checkConnection();
-            $scope.getDevices();
+            if($scope.isConnected){
+                $scope.getDevices();
+            }
         }
         
         $scope.checkConnection = function() {
@@ -74,6 +74,7 @@ app
         
         $scope.blescan = function()
         {
+            $scope.checkConnection();
             $http
                 .post($rootScope.settings.url + "/api/blescan")
 				.then(
@@ -86,6 +87,7 @@ app
         
         $scope.getDevices = function()
         {
+            $scope.checkConnection();
             $http
                 .post($rootScope.settings.url + "/api/devices")
 				.then(
@@ -98,6 +100,8 @@ app
         
         $scope.AddLight = function(x)
         {
+            $scope.checkConnection();
+            $rootScope.showLoading("Trwa dodawanie urządzenia");
             var req = {
                 
                 address: x.address,
@@ -114,15 +118,20 @@ app
 					{
                         console.log(result.data);
                         target = result.data.target;
+                        $rootScope.closeLoading();
                         $rootScope.showSuccessAlert("Dodano urządzenie!");
 					});
         }
         
         $scope.on = function(x) {
+            $scope.checkConnection();
             
             var req = {
-                target: x.target
+                target: x.target,
+                power: x.power
             }
+            
+            console.log(req);
                             
                 $http
                 .post($rootScope.settings.url + "/api/on", req)
@@ -138,6 +147,7 @@ app
         }
         
         $scope.off = function(x) {
+            $scope.checkConnection();
             
             var req = {
                 target: x.target
@@ -156,10 +166,11 @@ app
         }
         
         $scope.DelLight = function(x) {
-            
+            $scope.checkConnection();
         }
         
         $scope.setType = function(x) {
+            $scope.checkConnection();
             
             swal({
               title: 'Wybierz typ urządzenia',
@@ -176,9 +187,26 @@ app
               reverseButtons: true
             }).then((result) => {
               if (result.value) {
-                swal(
-                  'TODO!'
-                )
+                  
+                  
+                  var req = {
+                    target: x.target
+                }
+                  
+                $http
+                .post($rootScope.settings.url + "/api/setbtn", req)
+				.then(
+					function(result) 
+					{
+                        swal(
+                          'Zapisano jako Button'
+                        )
+                        $scope.getDevices();
+					});
+                  
+                  
+                  
+                  
               } else if (
                 // Read more about handling dismissals
                 result.dismiss === swal.DismissReason.cancel
@@ -189,7 +217,7 @@ app
                 }
                   
                 $http
-                .post($rootScope.settings.url + "/api/settype", req)
+                .post($rootScope.settings.url + "/api/setled", req)
 				.then(
 					function(result) 
 					{
@@ -203,7 +231,14 @@ app
             
         }
         
+        $scope.setPower = function(x) {
+            
+            console.log(x);
+            
+        }
+        
         $scope.purge = function (){
+            $scope.checkConnection();
             
             swal({
               title: 'Czy jesteś pewien?',
@@ -228,6 +263,7 @@ app
         }
         
         $scope.login = function(){
+            $scope.checkConnection();
             
             var req = 
                 {					
@@ -253,6 +289,7 @@ app
         }
         
         $scope.logout = function(){
+            $scope.checkConnection();
             $rootScope.settings.login = false;
             document.location = "/#/login";
             $rootScope.showInfoAlert("Wylogowano");  
@@ -293,6 +330,26 @@ app
                  timer: 1500
               })
              });  
+        }
+        
+        $rootScope.showLoading = function(text)
+        {
+            $(function () {
+             swal({
+                    title: 'Czekaj!',
+                    text: text,
+                    onOpen: () => {
+                        swal.showLoading()
+                    }
+                })  
+             });  
+        }
+        
+        $rootScope.closeLoading = function()
+        {
+            $(function () {
+              swal.close();
+            });  
         }
             
         

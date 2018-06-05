@@ -34,7 +34,7 @@
   ],
   "nodes":[
     {
-      "deviceKey":"7d8e8253ec780548bf780e9502bc8abd",
+      "deviceKey":"8383116890b0388953646ad006b68c9a",
       "configuration":{
         "netKeys":[
           "0000"
@@ -42,15 +42,39 @@
         "elements":[
           {
             "elementIndex":0,
-            "unicastAddress":"0100"
+            "unicastAddress":"0100",
+            "models":[
+              {
+                "modelId":"1001",
+                "bind":[
+                  1
+                ]
+              }
+            ]
           },
           {
             "elementIndex":1,
-            "unicastAddress":"0101"
+            "unicastAddress":"0101",
+            "models":[
+              {
+                "modelId":"1001",
+                "bind":[
+                  1
+                ]
+              }
+            ]
           },
           {
             "elementIndex":2,
-            "unicastAddress":"0102"
+            "unicastAddress":"0102",
+            "models":[
+              {
+                "modelId":"1001",
+                "bind":[
+                  1
+                ]
+              }
+            ]
           },
           {
             "elementIndex":3,
@@ -111,10 +135,10 @@
         ]
       },
       "IVindex":5,
-      "sequenceNumber":5
+      "sequenceNumber":13
     },
     {
-      "deviceKey":"e78774480e0a78f9fe42dda6b5af254f",
+      "deviceKey":"e79c7c6334935a8dc997dd9d4a304dcb",
       "configuration":{
         "netKeys":[
           "0000"
@@ -191,10 +215,10 @@
         ]
       },
       "IVindex":5,
-      "sequenceNumber":5
+      "sequenceNumber":131
     },
     {
-      "deviceKey":"03636ac64aa7882ec61f46f4c2835a34",
+      "deviceKey":"4332f1b51242a42c34e117ea884cc712",
       "configuration":{
         "netKeys":[
           "0000"
@@ -271,7 +295,7 @@
         ]
       },
       "IVindex":5,
-      "sequenceNumber":5
+      "sequenceNumber":35
     }
   ],
   "IVindex":5,

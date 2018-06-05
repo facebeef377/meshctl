@@ -14,7 +14,7 @@
                                     	<th>Status</th>
                                         <th>UnicastAddress</th>
                                     	<th>Zmień status</th>
-                                    	<th>Menu</th>
+                                    	<th>Moc</th>
                                     </thead>
                                     <tbody>
                                         <tr ng-repeat="x in devices">
@@ -30,13 +30,14 @@
                                                 <p style="color: green; font-weight: 700;" ng-if="x.state == 'ON'">On</p>
                                             </td>
                                             <td>{{x.target}}</td>
-                                        	<td>
+                                        	<td ng-if="x.type == 'LED'">
                                                 <button type="button" ng-click="on(x)" ng-if="x.state == 'OFF'" class="btn btn-default"><i class="fa fa-refresh" aria-hidden="true"></i></button>
                                                 <button type="button" ng-click="off(x)" ng-if="x.state == 'ON'" class="btn btn-default"><i class="fa fa-refresh" aria-hidden="true"></i></button>
                                             </td>
-                                        	<td>
+                                        	<td ng-if="x.type == 'LED'">
                                                 <!--<button type="button" ng-click="EditLight(x.addr)" class="btn btn-default">Edytuj</button>-->
-                                                <button type="button" ng-click="DelLight(x.addr)" class="btn btn-default">Usuń</button>
+                                                <!--<button type="button" ng-click="DelLight(x.addr)" class="btn btn-default">Usuń</button>-->
+                                                <input type="range" min="0" max="4" ng-change="setPower(x)" ng-model="x.power">
                                             </td>
                                         </tr>
                                     </tbody>
